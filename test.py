@@ -3,11 +3,11 @@ from config import GENERATIONS_PER_EPOCH, EPOCHS, BRANCHES, MAX_START_ELEMENT, M
 from simulation import Simulation
 
 
-def foo(x, y, z):
-    return 6 * x ** 3 - 9 * y ** 2 + 90 * z - 25
+def foo(x, y, z, w):
+    return 6 * x ** 3 - 9 * y ** 2 + 90 * z + w - 25
 
 
-def restriction(x, y, z):
+def restriction(x, y, z, w):
     return x > 0 and z > 10
 
 
