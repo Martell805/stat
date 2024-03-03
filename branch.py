@@ -58,7 +58,7 @@ class Branch:
     def set_mutation_addition(self, mutation_addition):
         self.mutation_addition = mutation_addition
 
-    def step(self, fitness, solutions):
+    def step(self, variables, fitness, solutions):
         solutions.sort(key=fitness)
 
         best_solutions = solutions[:self.best_population]
@@ -69,24 +69,21 @@ class Branch:
         for _ in range(self.population - best_guaranteed_population):
             el = random.choice(best_solutions)
 
-            el0 = (el[0] * random.uniform(self.min_mutation_modifier, self.max_mutation_modifier)
-                   + random.uniform(-self.mutation_addition, self.mutation_addition))
-            el1 = (el[1] * random.uniform(self.min_mutation_modifier, self.max_mutation_modifier)
-                   + random.uniform(-self.mutation_addition, self.mutation_addition))
-            el2 = (el[2] * random.uniform(self.min_mutation_modifier, self.max_mutation_modifier)
-                   + random.uniform(-self.mutation_addition, self.mutation_addition))
-
-            new_gen.append((el0, el1, el2))
+            new_gen.append(tuple((
+                el[i] * random.uniform(self.min_mutation_modifier, self.max_mutation_modifier) + random.uniform(
+                    -self.mutation_addition, self.mutation_addition)
+                for i in range(variables)
+            )))
 
         new_gen += best_solutions[:best_guaranteed_population]
 
         return new_gen
 
-    def run(self, generations, fitness, solutions):
+    def run(self, generations, variables, fitness, solutions):
         solutions = solutions.copy()
 
         for _ in range(generations):
-            solutions = self.step(fitness, solutions)
+            solutions = self.step(variables, fitness, solutions)
 
         solutions.sort(key=fitness)
 

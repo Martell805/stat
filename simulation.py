@@ -18,17 +18,21 @@ class Simulation:
     def insert_branch(self, branch: Branch):
         self.branches.append(branch)
 
-    def run(self, min_start_element, max_start_element, start_population, epochs, generations_per_epoch, fitness):
-        solutions = [(
-            random.uniform(min_start_element, max_start_element),
-            random.uniform(min_start_element, max_start_element),
-            random.uniform(min_start_element, max_start_element),
+    def epoch(self, generations, variables, fitness, solutions):
+        answers = [
+            branch.run(generations, variables, fitness, solutions) for branch in self.branches
+        ]
+
+        return answers
+
+    def run(self, min_start_element, max_start_element, start_population, variables, epochs, generations_per_epoch,
+            fitness):
+        solutions = [tuple(
+            random.uniform(min_start_element, max_start_element) for _ in range(variables)
         ) for _ in range(start_population)]
 
         for epoch in range(epochs):
-            answers = [
-                branch.run(generations_per_epoch, fitness, solutions) for branch in self.branches
-            ]
+            answers = self.epoch(generations_per_epoch, variables, fitness, solutions)
 
             solutions = []
 
