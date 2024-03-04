@@ -1,6 +1,7 @@
 BRANCHES = [
     {
         "name": "Extreme",
+        "breed": False,
         "best_population": 100,
         "best_population_guaranteed_percent": 0,
         "random_population": 100,
@@ -10,6 +11,7 @@ BRANCHES = [
     },
     {
         "name": "Normal",
+        "breed": False,
         "best_population": 100,
         "best_population_guaranteed_percent": 10,
         "random_population": 50,
@@ -19,13 +21,24 @@ BRANCHES = [
     },
     {
         "name": "Super safe",
+        "breed": False,
         "best_population": 200,
         "best_population_guaranteed_percent": 10,
         "random_population": 0,
         "population": 1000,
         "mutation_percent": 10,
         "mutation_addition": 0,
-    }
+    },
+    {
+        "name": "Breedable",
+        "breed": True,
+        "best_population": 200,
+        "best_population_guaranteed_percent": 0,
+        "random_population": 50,
+        "population": 1000,
+        "mutation_percent": 10,
+        "mutation_addition": 0.1,
+    },
 ]
 
 GENERATIONS_PER_EPOCH = 1000

@@ -1,3 +1,5 @@
+import time
+
 from config import GENERATIONS_PER_EPOCH, EPOCHS, BRANCHES, MAX_START_ELEMENT, MIN_START_ELEMENT, START_POPULATION, \
     VARIABLES
 from simulation import Simulation
@@ -20,11 +22,15 @@ def fitness(tup):
     return ans
 
 
-simulation = Simulation()
-simulation.initialize_branches(BRANCHES)
-solutions = simulation.run(MIN_START_ELEMENT, MAX_START_ELEMENT, START_POPULATION, VARIABLES, EPOCHS,
-                           GENERATIONS_PER_EPOCH, fitness)
+if __name__ == '__main__':
+    simulation = Simulation()
+    simulation.initialize_branches(BRANCHES)
 
-solutions.sort(key=fitness)
-print(f"Final:")
-print(fitness(solutions[0]), solutions[0])
+    start_time = time.time()
+    solutions = simulation.run(MIN_START_ELEMENT, MAX_START_ELEMENT, START_POPULATION, VARIABLES, EPOCHS,
+                               GENERATIONS_PER_EPOCH, fitness)
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+    solutions.sort(key=fitness)
+    print(f"Final:")
+    print(fitness(solutions[0]), solutions[0])

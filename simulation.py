@@ -1,5 +1,5 @@
 import random
-
+from multiprocessing import Process, Queue
 from branch import Branch
 
 
@@ -18,9 +18,30 @@ class Simulation:
     def insert_branch(self, branch: Branch):
         self.branches.append(branch)
 
+    def branch_process(self, branch, args, queue):
+        print(f"Started branch {branch.name}")
+        result = branch.run(*args)
+        queue.put((branch.name, result))
+        print(f"Ended branch {branch.name} with best {result[0]}")
+
     def epoch(self, generations, variables, fitness, solutions):
+        queue = Queue()
+
+        processes = [
+            Process(
+                target=self.branch_process,
+                args=(
+                    branch,
+                    (generations, variables, fitness, solutions),
+                    queue
+                )) for branch in self.branches
+        ]
+
+        for process in processes:
+            process.start()
+
         answers = [
-            branch.run(generations, variables, fitness, solutions) for branch in self.branches
+            queue.get() for _ in self.branches
         ]
 
         return answers
@@ -37,8 +58,8 @@ class Simulation:
             solutions = []
 
             print(f"Epoch {epoch}:")
-            for branch, answer in zip(self.branches, answers):
-                print(branch.name, fitness(answer[0]), answer[0])
+            for branch_name, answer in answers:
+                print(branch_name, fitness(answer[0]), answer[0])
                 solutions += answer[:start_population // len(self.branches)]
 
         solutions.sort(key=fitness)
