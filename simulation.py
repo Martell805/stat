@@ -10,10 +10,10 @@ class Simulation:
     max_start_element: int
     start_population: int
 
-    plot_data: dict
+    solutions: list[tuple]
 
     def __init__(self):
-        self.plot_data = dict()
+        self.solutions = []
 
     def initialize_branches(self, config):
         self.branches = [
@@ -28,12 +28,9 @@ class Simulation:
 
     def branch_process(self, branch, args, queue):
         print(f"Started branch {branch.get_name()}")
-        result = branch.run(*args)
-        queue.put((branch.get_name(), result))
-        print(f"Ended branch {branch.get_name()} with best {result[0]}")
-
-    def __get_average_score(self, fitness, solutions):
-        return sum(map(fitness, solutions)) / len(solutions)
+        branch.run(*args)
+        queue.put(branch)
+        print(f"Ended branch {branch.get_name()} with best {branch.solutions[0]}")
 
     def epoch(self, generations, variables, fitness, solutions):
         queue = Queue()
@@ -51,36 +48,24 @@ class Simulation:
         for process in processes:
             process.start()
 
-        answers = [
+        self.branches = [
             queue.get() for _ in self.branches
         ]
 
-        for branch_name, answer in answers:
-            for branch in self.branches:
-                if branch_name == branch.get_name():
-                    branch.get_average_score_in_epoch().append(self.__get_average_score(fitness, answer))
-                    branch.get_average_best_score_in_epoch().append(
-                        self.__get_average_score(fitness, answer[:max(branch.best_population, 1)]))
-                    branch.get_best_score_in_epoch().append(fitness(answer[0]))
-
-        return answers
-
     def run(self, min_start_element, max_start_element, start_population, variables, epochs, generations_per_epoch,
             fitness):
-        solutions = [tuple(
+        self.solutions = [tuple(
             random.uniform(min_start_element, max_start_element) for _ in range(variables)
         ) for _ in range(start_population)]
 
         for epoch in range(epochs):
-            answers = self.epoch(generations_per_epoch, variables, fitness, solutions)
+            self.epoch(generations_per_epoch, variables, fitness, self.solutions)
 
-            solutions = []
+            self.solutions = []
 
             print(f"Epoch {epoch}:")
-            for branch_name, answer in answers:
-                print(branch_name, fitness(answer[0]), answer[0])
-                solutions += answer[:start_population // len(self.branches)]
+            for branch in self.branches:
+                print(branch.get_name(), fitness(branch.solutions[0]), branch.solutions[0])
+                self.solutions += branch.solutions[:start_population // len(self.branches)]
 
-        solutions.sort(key=fitness)
-
-        return solutions
+            self.solutions.sort(key=fitness)

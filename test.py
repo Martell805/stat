@@ -6,7 +6,6 @@ from config import GENERATIONS_PER_EPOCH, EPOCHS, BRANCHES, MAX_START_ELEMENT, M
 from simulation import Simulation
 
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 
 
 def foo(x, y, z, w):
@@ -32,13 +31,12 @@ if __name__ == '__main__':
     simulation.initialize_branches(BRANCHES)
 
     start_time = time.time()
-    solutions = simulation.run(MIN_START_ELEMENT, MAX_START_ELEMENT, START_POPULATION, VARIABLES, EPOCHS,
+    simulation.run(MIN_START_ELEMENT, MAX_START_ELEMENT, START_POPULATION, VARIABLES, EPOCHS,
                                GENERATIONS_PER_EPOCH, fitness)
     print(f"--- {time.time() - start_time} seconds ---")
 
-    solutions.sort(key=fitness)
     print(f"Final:")
-    print(fitness(solutions[0]), solutions[0])
+    print(fitness(simulation.solutions[0]), simulation.solutions[0])
 
     branches = simulation.get_branches()
 

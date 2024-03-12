@@ -25,6 +25,8 @@ class Branch:
 
     best_score_in_generation: list
     average_score_in_generation: list
+    average_best_score_in_generation: list
+
     best_score_in_epoch: list
     average_score_in_epoch: list
     average_best_score_in_epoch: list
@@ -109,6 +111,9 @@ class Branch:
 
         return new_gen
 
+    def __get_average_score(self, fitness, solutions):
+        return sum(map(fitness, solutions)) / len(solutions)
+
     def run(self, generations, variables, fitness, solutions):
         self.solutions = solutions.copy()
 
@@ -117,4 +122,8 @@ class Branch:
 
         self.solutions.sort(key=fitness)
 
-        return self.solutions
+        self.get_average_score_in_epoch().append(self.__get_average_score(fitness, self.solutions))
+        self.get_average_best_score_in_epoch().append(
+            self.__get_average_score(fitness, self.solutions[:max(self.best_population, 1)]))
+        self.get_best_score_in_epoch().append(fitness(self.solutions[0]))
+
