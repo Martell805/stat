@@ -23,6 +23,12 @@ class Branch:
 
     solutions: list[tuple]
 
+    best_score_in_generation: list
+    average_score_in_generation: list
+    best_score_in_epoch: list
+    average_score_in_epoch: list
+    average_best_score_in_epoch: list
+
     def __init__(self, configuration):
         self.name = configuration["name"]
         self.set_breed(configuration["breed"])
@@ -32,6 +38,22 @@ class Branch:
         self.set_population(configuration["population"])
         self.set_mutation_percent(configuration["mutation_percent"])
         self.set_mutation_addition(configuration["mutation_addition"])
+
+        self.best_score_in_epoch = []
+        self.average_score_in_epoch = []
+        self.average_best_score_in_epoch = []
+
+    def get_best_score_in_epoch(self):
+        return self.best_score_in_epoch
+
+    def get_average_score_in_epoch(self):
+        return self.average_score_in_epoch
+
+    def get_average_best_score_in_epoch(self):
+        return self.average_best_score_in_epoch
+
+    def get_name(self):
+        return self.name
 
     def set_breed(self, breed):
         self.breed = breed

@@ -33,7 +33,7 @@ BRANCHES = [
         "name": "Breedable",
         "breed": True,
         "best_population": 200,
-        "best_population_guaranteed_percent": 0,
+        "best_population_guaranteed_percent": 5,
         "random_population": 50,
         "population": 1000,
         "mutation_percent": 10,
