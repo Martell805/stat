@@ -27,10 +27,10 @@ class Simulation:
         return self.branches.copy()
 
     def branch_process(self, branch, args, queue):
-        print(f"Started branch {branch.get_name()}")
+        print(f"Started branch {branch.name}")
         branch.run(*args)
         queue.put(branch)
-        print(f"Ended branch {branch.get_name()} with best {branch.solutions[0]}")
+        print(f"Ended branch {branch.name} with best {branch.solutions[0]}")
 
     def epoch(self, generations, variables, fitness, solutions):
         queue = Queue()
@@ -65,7 +65,7 @@ class Simulation:
 
             print(f"Epoch {epoch}:")
             for branch in self.branches:
-                print(branch.get_name(), fitness(branch.solutions[0]), branch.solutions[0])
+                print(branch.name, fitness(branch.solutions[0]), branch.solutions[0])
                 self.solutions += branch.solutions[:start_population // len(self.branches)]
 
             self.solutions.sort(key=fitness)

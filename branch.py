@@ -41,21 +41,15 @@ class Branch:
         self.set_mutation_percent(configuration["mutation_percent"])
         self.set_mutation_addition(configuration["mutation_addition"])
 
+        self.best_score_in_generation = []
+        self.average_score_in_generation = []
+        self.average_best_score_in_generation = []
+
         self.best_score_in_epoch = []
         self.average_score_in_epoch = []
         self.average_best_score_in_epoch = []
 
-    def get_best_score_in_epoch(self):
-        return self.best_score_in_epoch
-
-    def get_average_score_in_epoch(self):
-        return self.average_score_in_epoch
-
-    def get_average_best_score_in_epoch(self):
-        return self.average_best_score_in_epoch
-
-    def get_name(self):
-        return self.name
+        self.solutions = []
 
     def set_breed(self, breed):
         self.breed = breed
@@ -91,7 +85,7 @@ class Branch:
         best_solutions += random.sample(self.solutions, self.random_population)
 
         best_guaranteed_population = int(self.best_population * self.best_population_guaranteed_modifier)
-        new_gen = []
+        self.solutions = []
         for _ in range(self.population - best_guaranteed_population):
             element1 = random.choice(best_solutions)
 
@@ -101,29 +95,39 @@ class Branch:
                     (element1[i] + element2[i]) / 2 for i in range(variables)
                 )
 
-            new_gen.append(tuple((
+            self.solutions.append(tuple((
                 element1[i] * random.uniform(self.min_mutation_modifier, self.max_mutation_modifier) + random.uniform(
                     -self.mutation_addition, self.mutation_addition)
                 for i in range(variables)
             )))
 
-        new_gen += best_solutions[:best_guaranteed_population]
+        self.solutions += best_solutions[:best_guaranteed_population]
 
-        return new_gen
+        self.solutions.sort(key=fitness)
+
+        self.average_score_in_generation.append(self.__get_average_score(fitness, self.solutions))
+        self.average_best_score_in_generation.append(
+            self.__get_average_score(fitness, self.solutions[:max(self.best_population, 1)]))
+        self.best_score_in_generation.append(fitness(self.solutions[0]))
 
     def __get_average_score(self, fitness, solutions):
         return sum(map(fitness, solutions)) / len(solutions)
 
     def run(self, generations, variables, fitness, solutions):
-        self.solutions = solutions.copy()
-
-        for _ in range(generations):
-            self.solutions = self.step(variables, fitness)
+        if self.solutions:
+            self.solutions = self.solutions[:self.population // 2] + solutions.copy()[:self.population // 2]
+        else:
+            self.solutions = solutions.copy()
 
         self.solutions.sort(key=fitness)
 
-        self.get_average_score_in_epoch().append(self.__get_average_score(fitness, self.solutions))
-        self.get_average_best_score_in_epoch().append(
+        for _ in range(generations):
+            self.step(variables, fitness)
+
+        self.solutions.sort(key=fitness)
+
+        self.average_score_in_epoch.append(self.__get_average_score(fitness, self.solutions))
+        self.average_best_score_in_epoch.append(
             self.__get_average_score(fitness, self.solutions[:max(self.best_population, 1)]))
-        self.get_best_score_in_epoch().append(fitness(self.solutions[0]))
+        self.best_score_in_epoch.append(fitness(self.solutions[0]))
 

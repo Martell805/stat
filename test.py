@@ -32,29 +32,41 @@ if __name__ == '__main__':
 
     start_time = time.time()
     simulation.run(MIN_START_ELEMENT, MAX_START_ELEMENT, START_POPULATION, VARIABLES, EPOCHS,
-                               GENERATIONS_PER_EPOCH, fitness)
+                   GENERATIONS_PER_EPOCH, fitness)
     print(f"--- {time.time() - start_time} seconds ---")
 
     print(f"Final:")
     print(fitness(simulation.solutions[0]), simulation.solutions[0])
 
-    branches = simulation.get_branches()
+    branches = simulation.branches
 
-    fig, axes = plt.subplots(len(branches), 3, figsize=(15, 2 * len(BRANCHES)), layout='constrained')
+    fig, axes = plt.subplots(len(branches), 6, figsize=(30, 2 * len(BRANCHES)), layout='constrained')
 
     for branch, row in zip(branches, axes):
         row = iter(row)
 
         best_subplot = next(row)
-        best_subplot.set_title(f"Best of {branch.get_name()}")
-        best_subplot.plot(list(map(lambda x: log(x, 10), branch.get_best_score_in_epoch())))
+        best_subplot.set_title(f"Best of {branch.name}")
+        best_subplot.plot(list(map(lambda x: min(5.0, log(x, 10).real), branch.best_score_in_epoch)))
 
         average_subplot = next(row)
-        average_subplot.set_title(f"Avg of {branch.get_name()}")
-        average_subplot.plot(list(map(lambda x: log(x, 10), branch.get_average_score_in_epoch())))
+        average_subplot.set_title(f"Avg of {branch.name}")
+        average_subplot.plot(list(map(lambda x: min(5.0, log(x, 10).real), branch.average_score_in_epoch)))
 
         average_subplot = next(row)
-        average_subplot.set_title(f"Avg of best {branch.best_population} in {branch.get_name()}")
-        average_subplot.plot(list(map(lambda x: log(x, 10), branch.get_average_best_score_in_epoch())))
+        average_subplot.set_title(f"Avg of best {branch.best_population} in {branch.name}")
+        average_subplot.plot(list(map(lambda x: min(5.0, log(x, 10).real), branch.average_best_score_in_epoch)))
+
+        best_subplot = next(row)
+        best_subplot.set_title(f"Best of {branch.name}")
+        best_subplot.plot(list(map(lambda x: min(5.0, log(x, 10).real), branch.best_score_in_generation)))
+
+        average_subplot = next(row)
+        average_subplot.set_title(f"Avg of {branch.name}")
+        average_subplot.plot(list(map(lambda x: min(5.0, log(x, 10).real), branch.average_score_in_generation)))
+
+        average_subplot = next(row)
+        average_subplot.set_title(f"Avg of best {branch.best_population} in {branch.name}")
+        average_subplot.plot(list(map(lambda x: min(5.0, log(x, 10).real), branch.average_best_score_in_generation)))
 
     plt.show()
