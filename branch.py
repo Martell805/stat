@@ -1,5 +1,7 @@
 import random
 
+from solution_manager import SolutionManager
+
 
 class Branch:
     name: str
@@ -31,7 +33,9 @@ class Branch:
     average_score_in_epoch: list
     average_best_score_in_epoch: list
 
-    def __init__(self, configuration):
+    solution_manager: SolutionManager
+
+    def __init__(self, configuration, solution_manager):
         self.name = configuration["name"]
         self.set_breed(configuration["breed"])
         self.set_best_population(configuration["best_population"])
@@ -50,6 +54,8 @@ class Branch:
         self.average_best_score_in_epoch = []
 
         self.solutions = []
+
+        self.solution_manager = solution_manager
 
     def set_breed(self, breed):
         self.breed = breed
@@ -78,8 +84,8 @@ class Branch:
     def get_solutions(self):
         return self.solutions.copy()
 
-    def step(self, variables, fitness):
-        self.solutions.sort(key=fitness)
+    def step(self):
+        self.solution_manager.sort_solutions(self.solutions)
 
         best_solutions = self.solutions[:self.best_population]
         best_solutions += random.sample(self.solutions, self.random_population)
@@ -90,44 +96,38 @@ class Branch:
             element1 = random.choice(best_solutions)
 
             if self.breed:
-                element2 = random.choice(best_solutions)
-                element1 = tuple(
-                    (element1[i] + element2[i]) / 2 for i in range(variables)
-                )
+                element1 = self.solution_manager.breed_selected_solution(element1, best_solutions)
 
-            self.solutions.append(tuple((
-                element1[i] * random.uniform(self.min_mutation_modifier, self.max_mutation_modifier) + random.uniform(
-                    -self.mutation_addition, self.mutation_addition)
-                for i in range(variables)
-            )))
+            self.solutions.append(self.solution_manager.mutate_solution(
+                element1,
+                self.min_mutation_modifier,
+                self.max_mutation_modifier,
+                self.mutation_addition
+            ))
 
         self.solutions += best_solutions[:best_guaranteed_population]
 
-        self.solutions.sort(key=fitness)
+        self.solution_manager.sort_solutions(self.solutions)
 
-        self.average_score_in_generation.append(self.__get_average_score(fitness, self.solutions))
+        self.average_score_in_generation.append(self.solution_manager.get_average_score(self.solutions))
         self.average_best_score_in_generation.append(
-            self.__get_average_score(fitness, self.solutions[:max(self.best_population, 1)]))
-        self.best_score_in_generation.append(fitness(self.solutions[0]))
+            self.solution_manager.get_average_score(self.solutions[:max(self.best_population, 1)]))
+        self.best_score_in_generation.append(self.solution_manager.score_solution(self.solutions[0]))
 
-    def __get_average_score(self, fitness, solutions):
-        return sum(map(fitness, solutions)) / len(solutions)
-
-    def run(self, generations, variables, fitness, solutions):
+    def run(self, generations, solutions):
         if self.solutions:
             self.solutions = self.solutions[:self.population // 2] + solutions.copy()[:self.population // 2]
         else:
             self.solutions = solutions.copy()
 
-        self.solutions.sort(key=fitness)
+        self.solution_manager.sort_solutions(self.solutions)
 
         for _ in range(generations):
-            self.step(variables, fitness)
+            self.step()
 
-        self.solutions.sort(key=fitness)
+        self.solution_manager.sort_solutions(self.solutions)
 
-        self.average_score_in_epoch.append(self.__get_average_score(fitness, self.solutions))
+        self.average_score_in_epoch.append(self.solution_manager.get_average_score(self.solutions))
         self.average_best_score_in_epoch.append(
-            self.__get_average_score(fitness, self.solutions[:max(self.best_population, 1)]))
-        self.best_score_in_epoch.append(fitness(self.solutions[0]))
-
+            self.solution_manager.get_average_score(self.solutions[:max(self.best_population, 1)]))
+        self.best_score_in_epoch.append(self.solution_manager.score_solution(self.solutions[0]))

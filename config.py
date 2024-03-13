@@ -3,7 +3,7 @@ BRANCHES = [
         "name": "Extreme",
         "breed": False,
         "best_population": 100,
-        "best_population_guaranteed_percent": 0,
+        "best_population_guaranteed_percent": 1,
         "random_population": 100,
         "population": 1000,
         "mutation_percent": 200,
@@ -48,4 +48,7 @@ MIN_START_ELEMENT = -1000
 MAX_START_ELEMENT = 1000
 START_POPULATION = 1000
 
-VARIABLES = 4
+MAX_MATES_AMOUNT = 3
+
+USE_LOG_GRAPH = True
+MAX_GRAPH_VALUE = 3
