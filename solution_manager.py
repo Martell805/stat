@@ -1,6 +1,8 @@
 import random
 from inspect import signature
 
+from breed_strategy import BreedStrategy
+
 
 class SolutionManager:
     min_element: int
@@ -30,21 +32,32 @@ class SolutionManager:
 
         return result
 
-    def breed_solutions(self, solution1, solution2) -> tuple[float, ...] | None:
-        result = tuple(
-            (solution1[i] + solution2[i]) / 2 for i in range(self.variables)
-        )
+    def breed_solutions(self, solution1, solution2, breed_strategy) -> tuple[float, ...] | None:
+        result = None
+
+        match breed_strategy:
+            case BreedStrategy.AVERAGE:
+                result = tuple(
+                    (solution1[i] + solution2[i]) / 2 for i in range(self.variables)
+                )
+            case BreedStrategy.CHOOSE:
+                result = tuple(
+                    random.choice([solution1[i], solution2[i]]) for i in range(self.variables)
+                )
 
         if self.restriction(*result):
             return result
 
         return None
 
-    def breed_selected_solution(self, solution1, solutions):
+    def breed_selected_solution(self, solution1, solutions, breed_strategy):
+        if breed_strategy == BreedStrategy.NONE:
+            return solution1
+
         solutions = random.sample(solutions, self.max_mates_amount)
 
         for solution2 in solutions:
-            result = self.breed_solutions(solution1, solution2)
+            result = self.breed_solutions(solution1, solution2, breed_strategy)
             if result is not None:
                 return result
 

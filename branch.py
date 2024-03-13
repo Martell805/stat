@@ -1,12 +1,13 @@
 import random
 
+from breed_strategy import BreedStrategy
 from solution_manager import SolutionManager
 
 
 class Branch:
     name: str
 
-    breed: bool
+    breed: BreedStrategy
 
     best_population: int
     best_population_guaranteed_percent: int
@@ -37,7 +38,7 @@ class Branch:
 
     def __init__(self, configuration, solution_manager):
         self.name = configuration["name"]
-        self.set_breed(configuration["breed"])
+        self.set_breed(configuration["breed_strategy"])
         self.set_best_population(configuration["best_population"])
         self.set_best_population_guaranteed_percent(configuration["best_population_guaranteed_percent"])
         self.set_random_population(configuration["random_population"])
@@ -58,7 +59,7 @@ class Branch:
         self.solution_manager = solution_manager
 
     def set_breed(self, breed):
-        self.breed = breed
+        self.breed = BreedStrategy(breed)
 
     def set_best_population(self, best_population):
         self.best_population = best_population
@@ -95,8 +96,7 @@ class Branch:
         for _ in range(self.population - best_guaranteed_population):
             element1 = random.choice(best_solutions)
 
-            if self.breed:
-                element1 = self.solution_manager.breed_selected_solution(element1, best_solutions)
+            element1 = self.solution_manager.breed_selected_solution(element1, best_solutions, self.breed)
 
             self.solutions.append(self.solution_manager.mutate_solution(
                 element1,

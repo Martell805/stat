@@ -1,7 +1,7 @@
 BRANCHES = [
     {
         "name": "Extreme",
-        "breed": False,
+        "breed_strategy": "NONE",
         "best_population": 100,
         "best_population_guaranteed_percent": 1,
         "random_population": 100,
@@ -11,7 +11,7 @@ BRANCHES = [
     },
     {
         "name": "Normal",
-        "breed": False,
+        "breed_strategy": "NONE",
         "best_population": 100,
         "best_population_guaranteed_percent": 10,
         "random_population": 50,
@@ -21,7 +21,7 @@ BRANCHES = [
     },
     {
         "name": "Super safe",
-        "breed": False,
+        "breed_strategy": "NONE",
         "best_population": 200,
         "best_population_guaranteed_percent": 10,
         "random_population": 0,
@@ -30,8 +30,18 @@ BRANCHES = [
         "mutation_addition": 0,
     },
     {
-        "name": "Breedable",
-        "breed": True,
+        "name": "AvgBreed",
+        "breed_strategy": "AVERAGE",
+        "best_population": 200,
+        "best_population_guaranteed_percent": 5,
+        "random_population": 50,
+        "population": 1000,
+        "mutation_percent": 10,
+        "mutation_addition": 0.1,
+    },
+    {
+        "name": "ChuBreed",
+        "breed_strategy": "CHOOSE",
         "best_population": 200,
         "best_population_guaranteed_percent": 5,
         "random_population": 50,
