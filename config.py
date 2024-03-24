@@ -37,7 +37,7 @@ BRANCHES = [
         "random_population": 0,
         "population": 1000,
         "mutation_percent": 1,
-        "mutation_addition": 0,
+        "mutation_addition": 0.0001,
     },
     {
         "name": "AvgBreed",
@@ -64,11 +64,13 @@ BRANCHES = [
 GENERATIONS_PER_EPOCH = 1000
 EPOCHS = 10
 
-MIN_START_ELEMENT = -1000
-MAX_START_ELEMENT = 1000
+MIN_START_ELEMENT = -100
+MAX_START_ELEMENT = 100
 START_POPULATION = 1000
 
 MAX_MATES_AMOUNT = 3
+
+MAX_MUTATION_TRIES = 3
 
 USE_LOG_GRAPH = True
 MAX_GRAPH_VALUE = 3

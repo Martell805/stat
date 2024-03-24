@@ -1,21 +1,24 @@
+import math
 import time
 from cmath import log
 
-from config import GENERATIONS_PER_EPOCH, EPOCHS, BRANCHES, MAX_START_ELEMENT, MIN_START_ELEMENT, START_POPULATION, MAX_MATES_AMOUNT, MAX_GRAPH_VALUE, USE_LOG_GRAPH
+from config import GENERATIONS_PER_EPOCH, EPOCHS, BRANCHES, MAX_START_ELEMENT, MIN_START_ELEMENT, START_POPULATION, MAX_MATES_AMOUNT, MAX_GRAPH_VALUE, USE_LOG_GRAPH, MAX_MUTATION_TRIES
 from simulation import Simulation
 
 import matplotlib.pyplot as plt
 
 from solution_manager import SolutionManager
 
+import decimal
+decimal.getcontext().prec = 1000
+
 
 def foo(x, y, z, w):
-    return 6 * x ** 3 - 9 * y ** 2 + 90 * z + w - 25
+    return 6 * math.e ** x - 9 * y ** 2 + 5 * z + w - 25
 
 
 def restriction(x, y, z, w):
-    return True
-    # return x > 0 and z > 10
+    return x - y > 0 and z + w < 3 and x < 3
 
 
 def modify_result(x):
@@ -25,7 +28,7 @@ def modify_result(x):
 
 
 if __name__ == '__main__':
-    solution_manager = SolutionManager(MIN_START_ELEMENT, MAX_START_ELEMENT, MAX_MATES_AMOUNT, foo, restriction)
+    solution_manager = SolutionManager(MIN_START_ELEMENT, MAX_START_ELEMENT, MAX_MATES_AMOUNT, MAX_MUTATION_TRIES, foo, restriction)
 
     simulation = Simulation(solution_manager)
     simulation.initialize_branches(BRANCHES)

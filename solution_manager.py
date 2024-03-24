@@ -8,15 +8,17 @@ class SolutionManager:
     min_element: int
     max_element: int
     max_mates_amount: int
+    max_mutation_tries: int
     variables: int
     function: callable
     restriction: callable
 
-    def __init__(self, min_element, max_element, max_mates_amount, function, restriction):
+    def __init__(self, min_element, max_element, max_mates_amount, max_mutation_tries, function, restriction):
         self.min_element = min_element
         self.max_element = max_element
         self.variables = len(signature(function).parameters)
         self.max_mates_amount = max_mates_amount
+        self.max_mutation_tries = max_mutation_tries
         self.function = function
         self.restriction = restriction
 
@@ -70,20 +72,17 @@ class SolutionManager:
         return abs(self.function(*solution))
 
     def mutate_solution(self, solution, min_mutation_modifier, max_mutation_modifier, mutation_addition):
-        result = tuple((
-            solution[i] * random.uniform(min_mutation_modifier, max_mutation_modifier) +
-            random.uniform(-mutation_addition, mutation_addition)
-            for i in range(self.variables)
-        ))
-
-        while not self.restriction(*result):
+        for _ in range(self.max_mutation_tries):
             result = tuple((
                 solution[i] * random.uniform(min_mutation_modifier, max_mutation_modifier) +
                 random.uniform(-mutation_addition, mutation_addition)
                 for i in range(self.variables)
             ))
 
-        return result
+            if self.restriction(*result):
+                return result
+
+        return solution
 
     def sort_solutions(self, solutions):
         solutions.sort(key=self.score_solution)
