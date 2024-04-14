@@ -69,7 +69,7 @@ class SolutionManager:
         return [self.generate_solution() for _ in range(n)]
 
     def score_solution(self, solution):
-        return abs(self.function(*solution))
+        return self.function(*solution)
 
     def mutate_solution(self, solution, min_mutation_modifier, max_mutation_modifier, mutation_addition):
         for _ in range(self.max_mutation_tries):
